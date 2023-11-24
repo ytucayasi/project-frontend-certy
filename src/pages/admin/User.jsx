@@ -22,6 +22,10 @@ const User = () => {
     }
   };
 
+  useEffect(() => {
+    searchUserById();
+  }, []);
+
   return (
     <>
       <MainHeader searchUserById={searchUserById} />
