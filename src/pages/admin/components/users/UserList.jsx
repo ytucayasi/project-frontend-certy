@@ -2,31 +2,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useEffect } from "react";
 import Card from "./Card";
 import UserItem from "./UserItem";
-import userService from "/src/services/user.service";
 
-const UserList = () => {
+const UserList = ({data}) => {
   const [activeCard, setActiveCard] = useState(false);
-  const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await userService.getAll();
-        setUsers(response.data);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-  
-    fetchUsers();
-  
-  }, []);
 
   const renderUserList = () => {
     return (
       <>
-        {users.map(user => (
+        {data.map(user => (
           <UserItem key={user.id} data={user} onUserItemClick={() => handleUserItemClick(user)} />
         ))}
       </>
