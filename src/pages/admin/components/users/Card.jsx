@@ -1,16 +1,17 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import userData from "/src/config/userData.js";
 
 const Card = ({ user }) => {
     return (
-        <section className="text-sm bg-white rounded-lg p-5 w-96  flex-col justify-between items-center text-center hidden 2xl:flex">
+        <section id="card-container" className="text-sm bg-white rounded-lg p-5 w-96  flex-col justify-between items-center text-center hidden 2xl:flex">
             <div className="flex flex-col justify-center w-full items-center gap-2">
                 <figure className="w-24">
-                    <img className="w-full rounded-full" src={user.image} alt={user.altImage} />
+                    <img className="w-full rounded-full" src={userData.image} alt={userData.altImage} />
                 </figure>
                 <div className="w-full bg-general rounded-lg p-2">
-                    <p className="font-raleway-bold">Saul David Ytucayasi Savina</p>
-                    <p>Ingeniería de Sistemas</p>
-                    <p>Ciclo 7</p>
+                    <p className="font-raleway-bold">{user.nombre}</p>
+                    <p>{user.correo}</p>
+                    <p>{user.estado}</p>
                 </div>
                 <div className="w-full bg-general rounded-lg p-2">
                     <span className="text-xs">CU: </span>

@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 import Card from "./Card";
 import UserItem from "./UserItem";
 import userService from "/src/services/user.service";
-import userData from "/src/config/userData.js";
 
 const UserList = () => {
   const [activeCard, setActiveCard] = useState(false);
   const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -18,22 +18,33 @@ const UserList = () => {
         console.error('Error fetching users:', error);
       }
     };
-
+  
     fetchUsers();
+  
   }, []);
 
   const renderUserList = () => {
     return (
       <>
         {users.map(user => (
-          <UserItem key={user.id} data={user} />
+          <UserItem key={user.id} data={user} onUserItemClick={() => handleUserItemClick(user)} />
         ))}
       </>
     );
   };
 
-  const handleUserItemClick = (active) => {
-    setActiveCard(active);
+  const handleUserItemClick = (user) => {
+    if (selectedUser && selectedUser.id === user.id) {
+      closeCard();
+    } else {
+      setActiveCard(true);
+      setSelectedUser(user);
+    }
+  };
+
+  const closeCard = () => {
+    setSelectedUser(null);
+    setActiveCard(false);
   };
 
   return (
@@ -63,7 +74,7 @@ const UserList = () => {
           </tfoot>
         </table>
       </div>
-      {activeCard === true ? <Card user={userData} /> : <></>}
+      {activeCard === true ? <Card user={selectedUser}/> : <></>}
     </section>
   );
 }
