@@ -54,7 +54,7 @@ const User = () => {
         onActive={eventActive}
         text={text}
         inputVisible={inputVisible} />
-      {active ? <UserCreate /> : <UserList data={users} msg={msg} />}
+      {active ? <UserCreate onActive={eventActive}/> : <UserList data={users} msg={msg} />}
     </>
   );
 }

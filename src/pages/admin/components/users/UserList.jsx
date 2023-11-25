@@ -22,6 +22,7 @@ const UserList = ({ data, msg }) => {
             <UserItem
               key={user.id}
               data={user}
+              isActive={selectedUser && selectedUser.id === user.id}
               onUserItemClick={() => handleUserItemClick(user)}
             />
           ))}
@@ -42,7 +43,7 @@ const UserList = ({ data, msg }) => {
     if (selectedUser && selectedUser.id === user.id) {
       closeCard();
     } else {
-      setActiveCard(true);
+      setActiveCard(true)
       setSelectedUser(user);
     }
   };
@@ -60,8 +61,7 @@ const UserList = ({ data, msg }) => {
             <tr className="flex w-full gap-4 p-2">
               <th className="flex justify-center w-full">Código universitario</th>
               <th className="flex justify-center w-full">Nombres y apellidos</th>
-              <th className="justify-center w-full hidden 2xl:flex">Estado</th>
-              <th className="justify-center w-full hidden 2xl:flex">Correo</th>
+              <th className="justify-center w-full hidden 2xl:flex">Correo universitario</th>
               <th className="justify-center flex w-full 2xl:hidden">Acciones</th>
             </tr>
           </thead>
