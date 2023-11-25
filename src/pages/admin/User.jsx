@@ -5,20 +5,29 @@ import userService from "/src/services/user.service";
 
 const User = () => {
   const [users, setUsers] = useState([]);
+  const [msg, setMsg] = useState('');
 
   const searchUserById = async (userId) => {
     try {
-      let response;
-      console.log(userId);
       if (userId) {
-        response = await userService.get(userId);
-        setUsers(response.data ? [response.data] : []);
+        const response = await userService.get(userId);
+        if (response.data) {
+          setUsers([response.data]);
+        } else {
+          setUsers([]);
+          console.log('Usuario no encontrado');
+        }
       } else {
-        response = await userService.getAll();
+        const response = await userService.getAll();
         setUsers(response.data);
       }
     } catch (error) {
-      console.error('Error fetching users:', error);
+      if (error.response && error.response.status === 404) {
+        setUsers([]);
+        setMsg('Elemento no encontrado')
+      } else {
+        console.error('Error fetching users:', error);
+      }
     }
   };
 
@@ -29,7 +38,7 @@ const User = () => {
   return (
     <>
       <MainHeader searchUserById={searchUserById} />
-      <UserList data={users}/>
+      <UserList data={users} msg={msg}/>
     </>
   );
 }

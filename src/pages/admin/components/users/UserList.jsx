@@ -3,18 +3,39 @@ import { useState, useEffect } from "react";
 import Card from "./Card";
 import UserItem from "./UserItem";
 
-const UserList = ({data}) => {
+const UserList = ({ data, msg }) => {
   const [activeCard, setActiveCard] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
+  useEffect(() => {
+    if (data.length == 0) {
+      setActiveCard(false);
+      setSelectedUser(null);
+    }
+  }, [data]);
+
   const renderUserList = () => {
-    return (
-      <>
-        {data.map(user => (
-          <UserItem key={user.id} data={user} onUserItemClick={() => handleUserItemClick(user)} />
-        ))}
-      </>
-    );
+    if (data && data.length > 0) {
+      return (
+        <>
+          {data.map((user) => (
+            <UserItem
+              key={user.id}
+              data={user}
+              onUserItemClick={() => handleUserItemClick(user)}
+            />
+          ))}
+        </>
+      );
+    } else if (msg) {
+      return (
+        <tr className="flex gap-4 p-2 text-sm cursor-default">
+          <td className="w-full flex justify-center items-center text-center">Elemento no encontrado</td>
+        </tr>
+      );
+    } else {
+      return null;
+    }
   };
 
   const handleUserItemClick = (user) => {
@@ -58,7 +79,7 @@ const UserList = ({data}) => {
           </tfoot>
         </table>
       </div>
-      {activeCard === true ? <Card user={selectedUser}/> : <></>}
+      {activeCard === true ? <Card user={selectedUser} /> : <></>}
     </section>
   );
 }
