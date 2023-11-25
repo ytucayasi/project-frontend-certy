@@ -7,12 +7,12 @@ const User = () => {
   const [users, setUsers] = useState([]);
   const [msg, setMsg] = useState('');
 
-  const searchUserById = async (userId) => {
+  const searchUsercodU = async (codU) => {
     try {
-      if (userId) {
-        const response = await userService.get(userId);
+      if (codU) {
+        const response = await userService.get(codU);
         if (response.data) {
-          setUsers([response.data]);
+          setUsers(response.data);
         } else {
           setUsers([]);
           console.log('Usuario no encontrado');
@@ -32,12 +32,12 @@ const User = () => {
   };
 
   useEffect(() => {
-    searchUserById();
+    searchUsercodU();
   }, []);
 
   return (
     <>
-      <MainHeader searchUserById={searchUserById} />
+      <MainHeader searchUsercodU={searchUsercodU} />
       <UserList data={users} msg={msg}/>
     </>
   );

@@ -58,7 +58,7 @@ const UserList = ({ data, msg }) => {
         <table className="table-auto w-full h-full rounded-lg flex flex-col gap-2 bg-white">
           <thead>
             <tr className="flex w-full gap-4 p-2">
-              <th className="flex justify-center w-full">Clave</th>
+              <th className="flex justify-center w-full">Código universitario</th>
               <th className="flex justify-center w-full">Nombres y apellidos</th>
               <th className="justify-center w-full hidden 2xl:flex">Estado</th>
               <th className="justify-center w-full hidden 2xl:flex">Correo</th>

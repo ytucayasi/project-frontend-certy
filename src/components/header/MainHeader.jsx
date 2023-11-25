@@ -3,17 +3,17 @@ import TplMainHeader from "/src/templates/TplMainHeader.jsx";
 import ButtonHeader from "./ButtonHeader";
 import SearchInput from "./SearchInput";
 
-const MainHeader = ({ searchUserById }) => {
+const MainHeader = ({ searchUsercodU }) => {
 
   return (
     <TplMainHeader>
       <div className="flex gap-2">
         <ButtonHeader text='Registrar' />
-        <ButtonHeader text='Filtrar' />
+{/*         <ButtonHeader text='Filtrar' /> */}
       </div>
       <SearchInput
         placeholder='Ingresar solicitud'
-        onSearchUserById={searchUserById}
+        onSearchUsercodU={searchUsercodU}
       />
     </TplMainHeader>
   );

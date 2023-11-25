@@ -1,12 +1,20 @@
 import http from "../common/http-common.jsx";
 
 class UserService {
-  getAll() {
+  /* getAll() {
     return http.get("/usuarios");
+  } */
+  
+  getAll() {
+    return http.get("/estudiantes-usuarios");
   }
 
-  get(id) {
+  /* get(id) {
     return http.get(`/usuarios/${id}`);
+  } */
+
+  get(id) {
+    return http.get(`/estudiantes-usuarios/${id}`);
   }
 
   create(data) {
