@@ -1,20 +1,21 @@
-import { useState, useEffect } from "react";
 import TplMainHeader from "/src/templates/TplMainHeader.jsx";
 import ButtonHeader from "./ButtonHeader";
 import SearchInput from "./SearchInput";
 
-const MainHeader = ({ searchUsercodU }) => {
+const MainHeader = ({ searchUsercodU, onActive, text, inputVisible }) => {
 
   return (
     <TplMainHeader>
       <div className="flex gap-2">
-        <ButtonHeader text='Registrar' />
+        <ButtonHeader text={text} onActive={onActive}/>
 {/*         <ButtonHeader text='Filtrar' /> */}
       </div>
-      <SearchInput
-        placeholder='Ingresar solicitud'
-        onSearchUsercodU={searchUsercodU}
-      />
+      {inputVisible && (
+        <SearchInput
+          placeholder='Ingresar solicitud'
+          onSearchUsercodU={searchUsercodU}
+        />
+      )}
     </TplMainHeader>
   );
 }

@@ -18,7 +18,7 @@ class UserService {
   }
 
   create(data) {
-    return http.post("/usuarios", data);
+    return http.post("/estudiantes-usuarios", data);
   }
 
   update(id, data) {
