@@ -7,6 +7,7 @@ import UserCreate from "./components/users/UserCreate";
 
 const User = () => {
   const [users, setUsers] = useState([]);
+  const [selectData, setSelectData] = useState([]);
   const [msg, setMsg] = useState('');
   const [active, setActive] = useState(false);
   const [text, setText] = useState('Registrar');
@@ -40,11 +41,17 @@ const User = () => {
     searchUsercodU();
   }, []);
 
-  const eventActive = () => {
+  const eventActive = (dataSelect) => {
+    if (dataSelect && !active) {
+      setSelectData(dataSelect);
+    } else {
+      setSelectData([]);
+    }
     setActive((prevActive) => !prevActive);
     setText((prevText) => (prevText === 'Registrar' ? 'Listar' : 'Registrar'));
     setInputVisible((prevInputVisible) => !prevInputVisible);
     searchUsercodU();
+    console.log(dataSelect);
   }
 
   return (
@@ -54,7 +61,7 @@ const User = () => {
         onActive={eventActive}
         text={text}
         inputVisible={inputVisible} />
-      {active ? <UserCreate onActive={eventActive}/> : <UserList data={users} msg={msg} />}
+      {active ? <UserCreate onActive={eventActive} data={selectData}/> : <UserList data={users} msg={msg} onActive={eventActive}/>}
     </>
   );
 }

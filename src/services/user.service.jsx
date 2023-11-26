@@ -22,7 +22,7 @@ class UserService {
   }
 
   update(id, data) {
-    return http.put(`/usuarios/${id}`, data);
+    return http.put(`/estudiantes-usuarios/${id}`, data);
   }
 
   delete(id) {
