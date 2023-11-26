@@ -5,15 +5,13 @@ const Card = ({ user, onActive }) => {
     foto,
     nombre,
     correo,
-    estado = '1',
+    estado,
     nombres,
     apellidos,
     fecha_nacimiento,
     dni,
     codigo_universitario,
   } = user;
-
-  const isUserActive = estado === 1;
 
   return (
     <section
@@ -24,10 +22,12 @@ const Card = ({ user, onActive }) => {
         <figure className="w-24">
           <img className="w-full rounded-full" src={foto} alt="Aún falta una foto" />
         </figure>
-        <div className="w-full bg-general rounded-lg p-2">
+        <div className="w-full bg-general rounded-lg p-2 flex flex-col items-center justify-center gap-2">
           <p className="font-raleway-bold">{nombre}</p>
           <p>{correo}</p>
-          <p>{isUserActive ? 'Activo' : 'Inactivo'}</p>
+          {estado === '0' ?
+            <span className="bg-red-500 p-2 text-center text-white rounded-md">Inactivo</span> :
+            <span className="bg-green-500 p-2 text-center text-white rounded-md">Activo</span>}
         </div>
         <div className="w-full bg-general rounded-lg p-2">
           <p>{nombres}</p>

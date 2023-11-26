@@ -34,29 +34,23 @@ const UserCreate = ({ onActive, data }) => {
   }, [msg]);
 
   const createOrUpdateEstudiante = async () => {
-    const camposFaltantes = Object.keys(estudiante).filter(key => !estudiante[key]);
-
-    if (camposFaltantes.length > 0) {
-      setMsg('Faltan datos, ingrese bien los datos');
-      return;
+    if (typeof value === 'string') {
+      Object.keys(estudiante).forEach(key => {
+        estudiante[key] = estudiante[key].trim();
+      });
     }
-
-    // Formatear la fecha
     estudiante.fecha_nacimiento = formatDate(estudiante.fecha_nacimiento);
-
-    estudiante.estado = '1';
     estudiante.foto = 'src/comon/pgn.png';
 
     let response;
 
     try {
       if (data && data.usuario_id) {
-        // Si hay datos, estamos editando, así que llamamos a la función de actualizar
         response = await userService.update(data.usuario_id, estudiante);
         console.log('Estudiante actualizado exitosamente:', response.data);
         console.log('Editar usuario');
       } else {
-        // Si no hay datos, estamos creando un nuevo estudiante
+        estudiante.estado = '1';
         response = await userService.create(estudiante);
         console.log('Estudiante creado exitosamente:', response.data);
         console.log('crear usuario');
@@ -101,6 +95,25 @@ const UserCreate = ({ onActive, data }) => {
   const renderInputField = (name, placeholder, type = 'text') => {
     const inputValue = type === 'date' ? formatDate(estudiante[name]) : estudiante[name];
 
+    if (name === 'estado' && (data && data.usuario_id)) {
+      return (
+        <div className="flex items-center w-full md:w-fit">
+          <span className="p-2 border-solid border-s-2 border-y-2 border-first rounded-s-lg h-full">
+            <FontAwesomeIcon className="text-first" icon="fa-magnifying-glass" />
+          </span>
+          <select
+            name={name}
+            className="text-first border-solid border-2 border-first outline-none rounded-e-lg p-2 w-full h-full md:w-60"
+            value={inputValue || ''}
+            onChange={handleEstudianteChange}
+          >
+            <option value="1">Activo</option>
+            <option value="0">Inactivo</option>
+          </select>
+        </div>
+      );
+    }
+
     return (
       <div className="flex items-center w-full md:w-fit">
         <span className="p-2 border-solid border-s-2 border-y-2 border-first rounded-s-lg h-full">
@@ -133,6 +146,7 @@ const UserCreate = ({ onActive, data }) => {
             {renderInputField('dni', 'DNI')}
             {renderInputField('codigo_universitario', 'Código universitario')}
             {renderInputField('fecha_nacimiento', 'Fecha de nacimiento', 'date')}
+            {(data && data.id) ? renderInputField('estado', 'Estado') : <></>}
           </div>
           <div className="p-5 flex flex-col gap-4 md:flex-row">
             <button
