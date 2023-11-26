@@ -34,6 +34,13 @@ const UserCreate = ({ onActive, data }) => {
   }, [msg]);
 
   const createOrUpdateEstudiante = async () => {
+    for (const campo in estudiante) {
+      if (!estudiante[campo]) {
+        setMsg(`El campo ${campo} es obligatorio, por favor ingréselo.`);
+        return;
+      }
+    }
+
     if (typeof value === 'string') {
       Object.keys(estudiante).forEach(key => {
         estudiante[key] = estudiante[key].trim();
@@ -73,6 +80,20 @@ const UserCreate = ({ onActive, data }) => {
     } catch (error) {
       setMsg('Ingrese datos correctos');
       console.error('Error al crear/actualizar estudiante:', error);
+    }
+  };
+
+  const eliminarEstudiante = async () => {
+    try {
+      if (!data || !data.usuario_id) {
+        setMsg('No se puede eliminar el estudiante sin un ID de usuario.');
+        return;
+      }
+      await userService.delete(data.usuario_id);
+      onActive();
+    } catch (error) {
+      setMsg('Error al eliminar el estudiante.');
+      console.error('Error al eliminar estudiante:', error);
     }
   };
 
@@ -134,7 +155,7 @@ const UserCreate = ({ onActive, data }) => {
   return (
     <section className="gap-4 w-full h-full flex flex-row overflow-hidden">
       <div className="flex flex-col gap-4 rounded-lg overflow-auto w-full">
-        <div className="table-auto w-full h-full rounded-lg flex flex-col gap-2 bg-white">
+        <div className="table-auto w-full h-full rounded-lg flex flex-col justify-start items-center gap-2 bg-white">
           <div className="overflow-auto p-5 flex flex-col gap-4">
             <div>Datos del usuario:</div>
             {renderInputField('nombre', 'Nombre del usuario')}
@@ -148,13 +169,18 @@ const UserCreate = ({ onActive, data }) => {
             {renderInputField('fecha_nacimiento', 'Fecha de nacimiento', 'date')}
             {(data && data.id) ? renderInputField('estado', 'Estado') : <></>}
           </div>
-          <div className="p-5 flex flex-col gap-4 md:flex-row">
+          <div className="p-5 flex flex-row gap-2">
             <button
-              className={`text-white p-2 rounded-lg bg-blue-500 hover:bg-blue-900`}
-              onClick={createOrUpdateEstudiante}
-            >
-              {data && data.length !== undefined ? 'Registrar' : 'Actualizar'}
+              className={`text-white p-2 h-fit rounded-lg bg-blue-500 hover:bg-blue-900`}
+              onClick={createOrUpdateEstudiante}>
+              {(data && data.id) ? 'Actualizar' : 'Registrar'}
             </button>
+            {data && data.length !== undefined ? <></> :
+              <button
+                className={`text-white p-2 h-fit rounded-lg bg-red-500 hover:bg-red-900`}
+                onClick={eliminarEstudiante}>
+                Eliminar
+              </button>}
             {msg && <div className="text-white p-2 rounded-lg bg-red-400">{msg}</div>}
           </div>
         </div>

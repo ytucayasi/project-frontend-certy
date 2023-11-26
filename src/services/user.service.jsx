@@ -26,7 +26,7 @@ class UserService {
   }
 
   delete(id) {
-    return http.delete(`/usuarios/${id}`);
+    return http.delete(`/estudiantes-usuarios/${id}`);
   }
 }
 
