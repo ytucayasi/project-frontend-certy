@@ -28,6 +28,10 @@ class UserService {
   delete(id) {
     return http.delete(`/estudiantes-usuarios/${id}`);
   }
+
+  login(data) {
+    return http.post("/login", data);
+  }
 }
 
 export default new UserService();
