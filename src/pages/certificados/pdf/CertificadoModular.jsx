@@ -80,7 +80,7 @@ const CertificadoModular = ({ data }) => {
             <Text style={{ color: 'gray', marginTop: 5 }}>Correspondiente al programa de estudios de</Text>
             <Text style={{ color: 'blue', marginTop: 5 }}>Enfermería Técnica</Text>
             <Text style={{ color: 'gray', marginTop: 5 }}>, desarrollado del</Text>
-            <Text style={{ color: 'blue', marginTop: 5 }}>14 de agosto al 01 de diciembre de 2023 </Text>
+            <Text style={{ color: 'blue', marginTop: 5 }}>14 de agosto al 01 de diciembre de 2023 {data[0].estudiante}</Text>
             <Text style={{ color: 'gray', marginTop: 5 }}>con un total de</Text>
             <Text style={{ color: 'blue', marginTop: 5 }}>14</Text>
             <Text style={{ color: 'gray', marginTop: 5 }}>créditos, equivalente a</Text>

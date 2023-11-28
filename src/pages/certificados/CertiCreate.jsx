@@ -10,12 +10,6 @@ import CertificadoTecnico from "./pdf/CertifcadoTecnico";
 const CertiCreate = ({ onActive, data, fields }) => {
   const [msg, setMsg] = useState("");
   const [formData, setFormData] = useState(getInitialFormData());
-
-  const [verPdf, setVerPdf] = useState(true);
-  const [dataTest, setDataTest] = useState([
-    { nombre: 'nombre', edad: '13' },
-    { nombre: 'nombre', edad: '13' },
-  ]);
   const [typeUser, setTypeUser] = useState('0');
 
   const handleButtonClick = (type) => {
@@ -57,11 +51,11 @@ const CertiCreate = ({ onActive, data, fields }) => {
         ? formatDate(formData[field.name])
         : formData[field.name];
     return (
-      <div className="w-full flex flex-col">
+      <div className="w-full flex flex-col" key={field.id}>
         <div>
-        {field.placeholder}
+          {field.placeholder}
         </div>
-        <div className=" flex w-full " key={field.id}>
+        <div className=" flex w-full ">
           <span
             className={`flex items-center p-2 border-solid border-s-2 border-y-2 border-first rounded-s-lg text-first ${field.index ? "cursor-pointer hover:bg-first hover:text-white" : ""}`}
           >
@@ -108,6 +102,17 @@ const CertiCreate = ({ onActive, data, fields }) => {
     const day = `0${date.getUTCDate()}`.slice(-2);
     return `${year}-${month}-${day}`;
   };
+
+  const loadPdf = () => {
+    const dataTest = [formData];
+    console.log(dataTest);
+    return (
+      typeUser === '0' ? <PDFViewer className="w-full h-full"><CertificadoModular data={dataTest} /></PDFViewer> :
+        typeUser === '1' ? <PDFViewer className="w-full h-full"><CertificadoAuxiliar data={dataTest} /></PDFViewer> :
+          typeUser === '2' ? <PDFViewer className="w-full h-full"><GradoBachiller data={dataTest} /></PDFViewer> :
+            typeUser === '3' ? <PDFViewer className="w-full h-full"><CertificadoTecnico data={dataTest} /></PDFViewer> : <></>
+    );
+  }
 
   const handleSubmit = async () => {
     try {
@@ -179,23 +184,18 @@ const CertiCreate = ({ onActive, data, fields }) => {
               {fields.map((field) => renderInputField(field))}
             </div>
             <div className="w-full h-full">
-              {
-                typeUser === '0' ? <PDFViewer className="w-full h-full"><CertificadoModular data={dataTest} /></PDFViewer> :
-                  typeUser === '1' ? <PDFViewer className="w-full h-full"><CertificadoAuxiliar data={dataTest} /></PDFViewer> :
-                    typeUser === '2' ? <PDFViewer className="w-full h-full"><GradoBachiller data={dataTest} /></PDFViewer> :
-                      typeUser === '3' ? <PDFViewer className="w-full h-full"><CertificadoTecnico data={dataTest} /></PDFViewer> : <></>
-              }
+              {loadPdf()}
             </div>
           </div>
           <div className="p-5 flex flex-row gap-2">
             <button
               className={`text-white p-2 h-fit rounded-lg bg-blue-500 hover:bg-blue-900`}
+              onClick={() => (loadPdf())}
             >
               Descargar
             </button>
             <button
               className={`text-white p-2 h-fit rounded-lg bg-orange-500 hover:bg-orange-900`}
-              onClick={() => (setVerPdf(true))}
             >
               Cargar
             </button>
