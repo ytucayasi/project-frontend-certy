@@ -3,6 +3,9 @@ import userService from "/src/services/user.service";
 import { useState, useEffect } from "react";
 import CertificadoModular from "./pdf/CertificadoModular";
 import { PDFViewer } from "@react-pdf/renderer";
+import CertificadoAuxiliar from "./pdf/CertificadoAuxiliar";
+import GradoBachiller from "./pdf/GradoBachiller";
+import CertificadoTecnico from "./pdf/CertifcadoTecnico";
 
 const CertiCreate = ({ onActive, data, fields }) => {
   const [msg, setMsg] = useState("");
@@ -12,7 +15,12 @@ const CertiCreate = ({ onActive, data, fields }) => {
   const [dataTest, setDataTest] = useState([
     { nombre: 'nombre', edad: '13' },
     { nombre: 'nombre', edad: '13' },
-  ])
+  ]);
+  const [typeUser, setTypeUser] = useState('0');
+
+  const handleButtonClick = (type) => {
+    setTypeUser(type);
+  };
 
   function getInitialFormData() {
     const initialData = {};
@@ -49,39 +57,46 @@ const CertiCreate = ({ onActive, data, fields }) => {
         ? formatDate(formData[field.name])
         : formData[field.name];
     return (
-      <div className="flex h-full w-full md:w-fit" key={field.id}>
-        <span className="flex items-center p-2 border-solid border-s-2 border-y-2 border-first rounded-s-lg">
-          <FontAwesomeIcon className="text-first" icon="fa-pencil-alt" />
-        </span>
-        {field.isSelect ? (
-          <select
-            name={field.name}
-            className="text-first border-solid border-2 border-first outline-none rounded-e-lg p-2 w-full h-full md:w-60"
-            value={inputValue || ""}
-            onChange={handleFieldChange}
+      <div className="w-full flex flex-col">
+        <div>
+        {field.placeholder}
+        </div>
+        <div className=" flex w-full " key={field.id}>
+          <span
+            className={`flex items-center p-2 border-solid border-s-2 border-y-2 border-first rounded-s-lg text-first ${field.index ? "cursor-pointer hover:bg-first hover:text-white" : ""}`}
           >
-            {field && field.options && Array.isArray(field.options) ? (
-              field.options.map((option) => (
-                <option key={option.id} value={option.value}>
-                  {option.label}
+            <FontAwesomeIcon icon="fa-pencil-alt" />
+          </span>
+          {field.isSelect ? (
+            <select
+              name={field.name}
+              className="text-first border-solid border-2 border-first outline-none rounded-e-lg p-2 w-full "
+              value={inputValue || ""}
+              onChange={handleFieldChange}
+            >
+              {field && field.options && Array.isArray(field.options) ? (
+                field.options.map((option) => (
+                  <option key={option.id} value={option.value}>
+                    {option.label}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  No hay opciones disponibles para este campo.
                 </option>
-              ))
-            ) : (
-              <option value="" disabled>
-                No hay opciones disponibles para este campo.
-              </option>
-            )}
-          </select>
-        ) : (
-          <input
-            name={field.name}
-            className="text-first border-solid border-2 border-first outline-none rounded-e-lg p-2 w-full md:w-60"
-            type={field.type}
-            placeholder={field.placeholder}
-            value={inputValue || ""}
-            onChange={handleFieldChange}
-          />
-        )}
+              )}
+            </select>
+          ) : (
+            <input
+              name={field.name}
+              className="text-first border-solid border-2 border-first outline-none rounded-e-lg p-2 w-full"
+              type={field.type}
+              placeholder={field.placeholder}
+              value={inputValue || ""}
+              onChange={handleFieldChange}
+            />
+          )}
+        </div>
       </div>
     );
   };
@@ -137,29 +152,55 @@ const CertiCreate = ({ onActive, data, fields }) => {
     <section className="gap-4 w-full h-full flex flex-row overflow-hidden">
       <div className="flex flex-col gap-4 rounded-lg overflow-auto w-full">
         <div className="w-full h-full rounded-lg flex flex-col gap-2 bg-white">
+          <div className="p-5 flex flex-col md:flex-row">
+            <button
+              className={`text-white p-2 rounded-s-lg hover:bg-orange-900 ${typeUser == '0' ? 'bg-orange-900' : 'bg-orange-500'}`}
+              onClick={() => (handleButtonClick('0'))}>
+              Certificado Modular
+            </button>
+            <button
+              className={`text-white p-2 hover:bg-purple-900 ${typeUser == '1' ? 'bg-purple-900' : 'bg-purple-500'}`}
+              onClick={() => (handleButtonClick('1'))}>
+              Certificado Auxiliar
+            </button>
+            <button
+              className={`text-white p-2 hover:bg-blue-900 ${typeUser == '2' ? 'bg-blue-900' : 'bg-blue-500'}`}
+              onClick={() => (handleButtonClick('2'))}>
+              Certificado Grado Bachiller
+            </button>
+            <button
+              className={`text-white p-2 rounded-e-lg hover:bg-red-900 ${typeUser == '3' ? 'bg-red-900' : 'bg-red-500'}`}
+              onClick={() => (handleButtonClick('3'))}>
+              Certificado técnico / profesional
+            </button>
+          </div>
           <div className="overflow-auto p-5 flex flex-col lg:flex-row md:items-center lg:justify-center lg:items-start gap-4 w-full h-full">
-            <div className=" flex flex-col gap-4 h-fit">
+            <div className="h-full overflow-auto w-full md:w-fit">
               {fields.map((field) => renderInputField(field))}
             </div>
             <div className="w-full h-full">
-              {dataTest ? verPdf ? <PDFViewer className="w-full h-full"><CertificadoModular data={dataTest} /></PDFViewer> : <></> : null}
+              {
+                typeUser === '0' ? <PDFViewer className="w-full h-full"><CertificadoModular data={dataTest} /></PDFViewer> :
+                  typeUser === '1' ? <PDFViewer className="w-full h-full"><CertificadoAuxiliar data={dataTest} /></PDFViewer> :
+                    typeUser === '2' ? <PDFViewer className="w-full h-full"><GradoBachiller data={dataTest} /></PDFViewer> :
+                      typeUser === '3' ? <PDFViewer className="w-full h-full"><CertificadoTecnico data={dataTest} /></PDFViewer> : <></>
+              }
             </div>
           </div>
           <div className="p-5 flex flex-row gap-2">
             <button
               className={`text-white p-2 h-fit rounded-lg bg-blue-500 hover:bg-blue-900`}
-
             >
               Descargar
             </button>
             <button
-              className={`text-white p-2 h-fit rounded-lg bg-blue-500 hover:bg-blue-900`}
+              className={`text-white p-2 h-fit rounded-lg bg-orange-500 hover:bg-orange-900`}
               onClick={() => (setVerPdf(true))}
             >
-              Ver
+              Cargar
             </button>
             <button
-              className={`text-white p-2 h-fit rounded-lg bg-blue-500 hover:bg-blue-900`}
+              className={`text-white p-2 h-fit rounded-lg bg-green-500 hover:bg-green-900`}
               onClick={handleSubmit}
             >
               {data && data.id ? "Actualizar" : "Registrar"}

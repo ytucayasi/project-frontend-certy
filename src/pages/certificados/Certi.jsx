@@ -76,10 +76,20 @@ const Certi = ({ service, entityName, createButtonText, listButtonText }) => {
   }, []);
 
   const fields = [
-    { id: '1', name: 'documento', placeholder: 'Nombre del usuario', type: 'file' },
-    { id: '2', name: 'correo', placeholder: 'Correo del usuario', type: 'text' },
-    { id: '3', name: 'correo', placeholder: 'Correo del usuario', type: 'text' },
-    { id: '4', name: 'correo', placeholder: 'Correo del usuario', type: 'text', isSelect: true, options: dataNivelAcademico },
+    { id: '1', name: 'estudiante', placeholder: 'Estudiante', type: 'text', index: true },
+    { id: '2', name: 'nombre_certificado', placeholder: 'Nombre del certificado', type: 'text' },
+    { id: '3', name: 'creditos', placeholder: 'Créditos', type: 'text' },
+    { id: '4', name: 'horas', placeholder: 'Horas', type: 'text' },
+    { id: '5', name: 'lugar', placeholder: 'Lugar', type: 'text' },
+    { id: '6', name: 'fecha_creacion', placeholder: 'Fecha', type: 'date' },
+    {
+      id: '7', name: 'estado', placeholder: 'Correo del usuario', type: 'text', isSelect: true, options: [
+        { id: 'bg-yellow-500', value: '0', label: 'Aun por revisar' },
+        { id: 'bg-blue-500', value: '1', label: 'Pendiente' },
+        { id: 'bg-gray-500', value: '2', label: 'Cancelado' },
+        { id: 'bg-purple-500', value: '3', label: 'Revisado' },
+      ]
+    },
   ];
 
   return (
