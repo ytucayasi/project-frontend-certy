@@ -8,6 +8,7 @@ import TplContent from './templates/TplContent.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import User from './pages/admin/User.jsx';
 import NotFound from './pages/NotFound.jsx';
+import Certi from './pages/certificados/Certi.jsx';
 
 function App() {
   const [userData, setUserData] = useState(
@@ -68,7 +69,7 @@ function App() {
             <TplContent>
               <Routes>
                 <Route index="/" element={<Dashboard />} />
-                <Route path="/certificados" element={<Dashboard />} />
+                <Route path="/certificados" element={<Certi />} />
                 <Route path="/solicitudes" element={<Dashboard />} />
 
                 {userData && userData.rol_nombre === 'Admin' && (

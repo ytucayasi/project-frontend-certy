@@ -1,13 +1,13 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 
-const SearchInput = ({ placeholder, onSearchUsercodU, onActive }) => {
+const SearchInput = ({ placeholder, search }) => {
   const [searchValue, setSearchValue] = useState('');
 
   const handleInputChange = (e) => {
     const value = e.target.value;
     setSearchValue(value);
-    onSearchUsercodU(value);
+    search(value);
   };
 
   return (

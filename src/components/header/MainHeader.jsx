@@ -2,18 +2,18 @@ import TplMainHeader from "/src/templates/TplMainHeader.jsx";
 import ButtonHeader from "./ButtonHeader";
 import SearchInput from "./SearchInput";
 
-const MainHeader = ({ searchUsercodU, onActive, text, inputVisible }) => {
+const MainHeader = ({ search, onToggle, buttonText, isInputVisible }) => {
 
   return (
     <TplMainHeader>
       <div className="flex gap-2">
-        <ButtonHeader text={text} onActive={onActive}/>
+        <ButtonHeader text={buttonText} onActive={onToggle}/>
 {/*         <ButtonHeader text='Filtrar' /> */}
       </div>
-      {inputVisible && (
+      {isInputVisible && (
         <SearchInput
           placeholder='Ingresar solicitud'
-          onSearchUsercodU={searchUsercodU}
+          search={search}
         />
       )}
     </TplMainHeader>

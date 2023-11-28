@@ -57,10 +57,10 @@ const User = () => {
   return (
     <>
       <MainHeader
-        searchUsercodU={searchUsercodU}
-        onActive={eventActive}
-        text={text}
-        inputVisible={inputVisible} />
+        search={searchUsercodU}
+        onToggle={eventActive}
+        buttonText={text}
+        isInputVisible={inputVisible} />
       {active ? <UserCreate onActive={eventActive} data={selectData}/> : <UserList data={users} msg={msg} onActive={eventActive}/>}
     </>
   );
