@@ -11,7 +11,7 @@ const Navbar = () => {
     const pageTemp = 'Inicio';
 
     return (
-        <nav className="bg-first text-white flex flex-row justify-between items-center shadow-lg px-5 py-5 h-20 md:px-10 relative z-10">
+        <nav className="bg-first text-white flex flex-row justify-between items-center shadow-lg px-5 py-5 h-20 md:px-10 relative z-[1]">
             <div className="flex items-center gap-4">
                 <div className="p-2 text-center rounded-sm w-10 cursor-pointer md:hidden hover:bg-second">
                     <FontAwesomeIcon icon='fa-bars' size="lg"/>
