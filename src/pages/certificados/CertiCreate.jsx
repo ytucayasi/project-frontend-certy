@@ -50,13 +50,14 @@ const CertiCreate = ({ onActive, data, fields }) => {
 
   const eventModal = () => {
     const [cod, setCod] = useState('');
-    const [planId, setPlanId] = useState('');
+    const [programaId, setProgramaId] = useState('0');
     const [users, setUsers] = useState([]);
     const [pPEEs, setPEEs] = useState([]);
     const [msg, setMsg] = useState('');
     const [programas, setProgramas] = useState([]);
     const [programa, setPrograma] = useState([]);
     const [modulos, setModulos] = useState([]);
+    const [modulo, setModulo] = useState('');
 
     const searchUsercodU = async (codU) => {
       let limitedUsers = [];
@@ -96,20 +97,25 @@ const CertiCreate = ({ onActive, data, fields }) => {
             setMsg('');
           } else {
             setPEEs([]);
-            console.log('PEE no encontrado');
+            setProgramas([]);
+            setModulos([]);
           }
         } else {
           const response = await PEEService.getAll();
           const limitedPEEs = response.data.slice(0, 3);
           setPEEs(limitedPEEs);
+          setProgramas([]);
+          setModulos([]);
         }
       } catch (error) {
         if (error.response && error.response.status === 404) {
-          setPEEs([]);
           setMsg('El estudiante no tiene asignado un Plan');
         } else {
           console.error('Error fetching PEEs:', error);
         }
+        setPEEs([]);
+        setProgramas([]);
+        setModulos([]);
       }
     };
 
@@ -119,10 +125,12 @@ const CertiCreate = ({ onActive, data, fields }) => {
           const response = await PEEService.getProgramas(planEstudioId);
           if (response.data) {
             console.log(response.data);
-            setProgramas(response.data.programas_estudio);
+            setProgramas(response.data.programas_estudio)
+            setModulo('0');
             setMsg('');
           } else {
-            setProgramas([]);
+            setPrograma([]);
+            setModulos([]);
             console.log('Programas de estudio no encontrados para el plan de estudios');
           }
         } else {
@@ -131,11 +139,12 @@ const CertiCreate = ({ onActive, data, fields }) => {
         }
       } catch (error) {
         if (error.response && error.response.status === 404) {
-          setProgramas([]);
           setMsg('No se encontraron programas de estudio para el plan de estudios');
         } else {
           console.error('Error fetching programas de estudio:', error);
         }
+        setProgramas([]);
+        setModulos([]);
       }
     };
 
@@ -150,14 +159,12 @@ const CertiCreate = ({ onActive, data, fields }) => {
               console.log(programaResponse.data);
               setMsg('');
               setPrograma(programaResponse.data);
-
-              // Obtener módulos por programa
               const modulosResponse = await PEEService.getModulosPorId(programaEstudioId);
-
               if (modulosResponse.data) {
                 console.log(modulosResponse.data);
                 setModulos(modulosResponse.data.modulos_formativos);
                 setMsg('');
+                setModulo('0');
               } else {
                 setModulos([]);
                 console.log('Módulos formativos no encontrados para el programa de estudio');
@@ -169,10 +176,13 @@ const CertiCreate = ({ onActive, data, fields }) => {
           } else {
             setMsg('Programa de estudio no disponible');
           }
+
         } else {
           console.log('Error: Se requiere un programaEstudioId para obtener información del programa');
           setPrograma([]);
+          setModulos([]);
         }
+        setModulo('0');
       } catch (error) {
         if (error.response && error.response.status === 404) {
           console.log('No se encontró información para el programa de estudio');
@@ -181,8 +191,14 @@ const CertiCreate = ({ onActive, data, fields }) => {
           console.error('Error fetching información del programa:', error);
         }
         setPrograma([]);
+        setModulos([]);
+        setModulo('0');
       }
     };
+
+    const onchangePEE = (id) => {
+      fetchPEE(id)
+    }
 
     const onChangeSearch = (e) => {
       const inputValue = e.target.value;
@@ -192,13 +208,26 @@ const CertiCreate = ({ onActive, data, fields }) => {
 
     const onChangePlan = (e) => {
       const inputValue = e.target.value;
+      setProgramaId('0');
+      console.log('ProgramaId after change:', programaId);
       fetchProgramasPorPlan(inputValue);
     };
 
     const onChangePrograma = (e) => {
       const inputValue = e.target.value;
-      fetchDataPorProgramaEstudio(inputValue);
+      if (inputValue !== '0') {
+        fetchDataPorProgramaEstudio(inputValue);
+      } else {
+        setPrograma([]);
+        setModulos([]);
+      }
     };
+
+    const onChangeSelectPM = (e) => {
+      const inputValue = e.target.value;
+      setModulo(inputValue);
+      console.log(inputValue);
+    }
 
     useEffect(() => {
       searchUsercodU(cod);
@@ -245,7 +274,7 @@ const CertiCreate = ({ onActive, data, fields }) => {
                         <span>{user.nombres} {user.apellidos}</span>
                         <span>{user.codigo_universitario}</span>
                         <span>{user.dni} {user.id}</span>
-                        <span><button onClick={() => fetchPEE(user.id)} className="flex bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-900">
+                        <span><button onClick={() => onchangePEE(user.id)} className="flex bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-900">
                           <FontAwesomeIcon icon="fa-check" />
                         </button></span>
                       </li>
@@ -272,14 +301,44 @@ const CertiCreate = ({ onActive, data, fields }) => {
                           <span className="">Selecciona un Programa</span>
                           <select
                             name='programa'
-                            defaultValue='0'
+                            defaultValue={programaId}
                             className="text-first border-solid border-2 border-first outline-none rounded-lg p-2 w-full "
                             onChange={onChangePrograma}
                           >
-                            <option value='0' disabled>Selecciona el Programa</option>
+                            <option value='0'>Selecciona el Programa</option>
                             {programas.map((programa) => (
                               <option key={programa.id} value={programa.id} disabled={programa.estado == 0 ? true : false} className={`${programa.estado == 1 ? 'text-white bg-green-500' : 'text-white bg-red-500'}`}>
                                 {programa.nombre}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      ) : <></>}
+                      {modulos && modulos.length !== 0 ?
+                        (<div className="flex items-center gap-2 justify-center">
+                          <label className="flex items-center gap-2">
+                            Seleccionar solo el programa
+                            <input defaultChecked='0' type="radio" value='0' name={modulo} onChange={onChangeSelectPM}/>
+                          </label>
+                          <label className="flex items-center gap-2">
+                            Seleccionar un módulo
+                            <input type="radio" value='1' name={modulo} onChange={onChangeSelectPM}/>
+                          </label>
+                        </div>) : <></>
+                      }
+                      {modulos && modulos.length !== 0 && modulo == '1' ? (
+                        <div className="flex flex-col gap-4">
+                          <span className="">Selecciona un Módulo</span>
+                          <select
+                            name='modulo'
+                            defaultValue={programaId}
+                            className="text-first border-solid border-2 border-first outline-none rounded-lg p-2 w-full "
+                            
+                          >
+                            <option value='0'>Selecciona el Módulo</option>
+                            {modulos.map((modulo) => (
+                              <option key={modulo.id} value={modulo.id} disabled={modulo.estado == 0 ? true : false} className={`${programa.estado == 1 ? 'text-white bg-green-500' : 'text-white bg-red-500'}`}>
+                                {modulo.nombre}
                               </option>
                             ))}
                           </select>
