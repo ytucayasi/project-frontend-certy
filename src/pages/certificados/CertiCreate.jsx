@@ -1,6 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import userService from "/src/services/user.service";
+import estudianteService from "/src/services/estudiante.service";
 import PEEService from "/src/services/pee.service";
+import ModuloFormativoService from "/src/services/moduloFormativo.service";
 import React, { useState, useEffect } from "react";
 import CertificadoModular from "./pdf/CertificadoModular";
 import { PDFViewer } from "@react-pdf/renderer";
@@ -59,6 +61,11 @@ const CertiCreate = ({ onActive, data, fields }) => {
     const [modulos, setModulos] = useState([]);
     const [modulo, setModulo] = useState('');
 
+    const [estudianteIdD, setEstudianteIdD] = useState('');
+    const [peeIdD, setPeeIdD] = useState('');
+    const [programaIdD, setProgramaIdD] = useState('');
+    const [moduloIdD, setModuloIdD] = useState('');
+
     const searchUsercodU = async (codU) => {
       let limitedUsers = [];
       try {
@@ -94,9 +101,12 @@ const CertiCreate = ({ onActive, data, fields }) => {
           if (response.data) {
             console.log(response.data);
             setPEEs(response.data);
+            setEstudianteIdD(id);
+            console.log('Estudiante: ', id);
             setMsg('');
           } else {
             setPEEs([]);
+            setEstudianteIdD('');
             setProgramas([]);
             setModulos([]);
           }
@@ -116,6 +126,7 @@ const CertiCreate = ({ onActive, data, fields }) => {
         setPEEs([]);
         setProgramas([]);
         setModulos([]);
+        setEstudianteIdD('')
       }
     };
 
@@ -127,15 +138,19 @@ const CertiCreate = ({ onActive, data, fields }) => {
             console.log(response.data);
             setProgramas(response.data.programas_estudio)
             setModulo('0');
+            setPeeIdD(planEstudioId);
+            console.log('Plan de estudio: ', planEstudioId);
             setMsg('');
           } else {
-            setPrograma([]);
+            setProgramas([]);
             setModulos([]);
-            console.log('Programas de estudio no encontrados para el plan de estudios');
+            setModulo('0');
           }
         } else {
-          // Tratar el caso donde no se proporciona un planEstudioId
-          console.log('Error: Se requiere un planEstudioId para obtener programas de estudio');
+          setProgramas([]);
+          setPrograma([]);
+          setModulos([]);
+          setModulo('0');
         }
       } catch (error) {
         if (error.response && error.response.status === 404) {
@@ -145,13 +160,14 @@ const CertiCreate = ({ onActive, data, fields }) => {
         }
         setProgramas([]);
         setModulos([]);
+        setModulo('0');
+        setPeeIdD('');
       }
     };
 
     const fetchDataPorProgramaEstudio = async (programaEstudioId) => {
       try {
         if (programaEstudioId) {
-          // Obtener información del programa
           const programaResponse = await PEEService.getPrograma(programaEstudioId);
           console.log(programaResponse.data.estado);
           if (programaResponse.data.estado == 1) {
@@ -159,6 +175,8 @@ const CertiCreate = ({ onActive, data, fields }) => {
               console.log(programaResponse.data);
               setMsg('');
               setPrograma(programaResponse.data);
+              setProgramaIdD(programaEstudioId);
+              console.log('Programa de estudio: ', programaEstudioId);
               const modulosResponse = await PEEService.getModulosPorId(programaEstudioId);
               if (modulosResponse.data) {
                 console.log(modulosResponse.data);
@@ -193,6 +211,7 @@ const CertiCreate = ({ onActive, data, fields }) => {
         setPrograma([]);
         setModulos([]);
         setModulo('0');
+        setModuloIdD('')
       }
     };
 
@@ -209,7 +228,6 @@ const CertiCreate = ({ onActive, data, fields }) => {
     const onChangePlan = (e) => {
       const inputValue = e.target.value;
       setProgramaId('0');
-      console.log('ProgramaId after change:', programaId);
       fetchProgramasPorPlan(inputValue);
     };
 
@@ -218,7 +236,7 @@ const CertiCreate = ({ onActive, data, fields }) => {
       if (inputValue !== '0') {
         fetchDataPorProgramaEstudio(inputValue);
       } else {
-        setPrograma([]);
+        setProgramas([]);
         setModulos([]);
       }
     };
@@ -227,6 +245,40 @@ const CertiCreate = ({ onActive, data, fields }) => {
       const inputValue = e.target.value;
       setModulo(inputValue);
       console.log(inputValue);
+    }
+
+    const onChangeModulo = (e) => {
+      const inputValue = e.target.value;
+      console.log('Modulo formativo: ', inputValue);
+      setModuloIdD(inputValue);
+    }
+
+    const saveChanges = async () => {
+      console.log('-----------------------------');
+      console.log('Estudiante: ', estudianteIdD);
+      console.log('Plan de estudio: ', peeIdD);
+      console.log('Programa de estudio: ', programaIdD);
+      console.log('Modulo formativo: ', moduloIdD);
+      const response = await estudianteService.get(estudianteIdD);
+      if (response.data) {
+        formData['estudiante'] = response.data.nombres + ' ' + response.data.apellidos;
+      } else {
+        console.log('Usuario no encontrado');
+      }
+
+      const programaResponse = await PEEService.getPrograma(programaIdD);
+      console.log(programaResponse.data);
+
+      
+      const moduloResponse = await ModuloFormativoService.get(moduloIdD);
+      console.log(moduloResponse.data);
+
+      if (modulo == 0) {
+        formData['nombre_certificado'] = programaResponse.data.programa.nombre
+      } else {
+        formData['nombre_certificado'] = moduloResponse.data.nombre
+      }
+      setShowModal(false);
     }
 
     useEffect(() => {
@@ -318,11 +370,11 @@ const CertiCreate = ({ onActive, data, fields }) => {
                         (<div className="flex items-center gap-2 justify-center">
                           <label className="flex items-center gap-2">
                             Seleccionar solo el programa
-                            <input defaultChecked='0' type="radio" value='0' name={modulo} onChange={onChangeSelectPM}/>
+                            <input defaultChecked='0' type="radio" value='0' name={modulo} onChange={onChangeSelectPM} />
                           </label>
                           <label className="flex items-center gap-2">
                             Seleccionar un módulo
-                            <input type="radio" value='1' name={modulo} onChange={onChangeSelectPM}/>
+                            <input type="radio" value='1' name={modulo} onChange={onChangeSelectPM} />
                           </label>
                         </div>) : <></>
                       }
@@ -333,7 +385,7 @@ const CertiCreate = ({ onActive, data, fields }) => {
                             name='modulo'
                             defaultValue={programaId}
                             className="text-first border-solid border-2 border-first outline-none rounded-lg p-2 w-full "
-                            
+                            onChange={onChangeModulo}
                           >
                             <option value='0'>Selecciona el Módulo</option>
                             {modulos.map((modulo) => (
@@ -358,7 +410,7 @@ const CertiCreate = ({ onActive, data, fields }) => {
                   <button
                     className="text-white bg-green-500 hover:bg-green-900 rounded-lg px-6 py-2 active:bg-green-600 font-bold text-sm shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"
-                    onClick={() => setShowModal(false)}
+                    onClick={() => saveChanges()}
                   >
                     Guardar cambios
                   </button>
@@ -508,7 +560,7 @@ const CertiCreate = ({ onActive, data, fields }) => {
             </button>
           </div>
           <div className="overflow-auto px-2 flex flex-col lg:flex-row md:items-center lg:justify-center lg:items-start gap-4 w-full h-full">
-            <div className="h-full overflow-auto w-full md:w-fit px-10">
+            <div className="h-full overflow-auto w-full md:w-[600px] px-5">
               {fields.map((field) => renderInputField(field))}
             </div>
             <div className="w-full h-full">
