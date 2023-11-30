@@ -168,6 +168,7 @@ const CertiCreate = ({ onActive, data, fields }) => {
     const fetchDataPorProgramaEstudio = async (programaEstudioId) => {
       try {
         if (programaEstudioId) {
+          setModulo('0');
           const programaResponse = await PEEService.getPrograma(programaEstudioId);
           console.log(programaResponse.data.estado);
           if (programaResponse.data.estado == 1) {
@@ -182,7 +183,6 @@ const CertiCreate = ({ onActive, data, fields }) => {
                 console.log(modulosResponse.data);
                 setModulos(modulosResponse.data.modulos_formativos);
                 setMsg('');
-                setModulo('0');
               } else {
                 setModulos([]);
                 console.log('Módulos formativos no encontrados para el programa de estudio');
@@ -200,7 +200,7 @@ const CertiCreate = ({ onActive, data, fields }) => {
           setPrograma([]);
           setModulos([]);
         }
-        setModulo('0');
+
       } catch (error) {
         if (error.response && error.response.status === 404) {
           console.log('No se encontró información para el programa de estudio');
@@ -216,6 +216,10 @@ const CertiCreate = ({ onActive, data, fields }) => {
     };
 
     const onchangePEE = (id) => {
+      setPEEs([]);
+      setProgramas([]);
+      setModulos([]);
+      setEstudianteIdD('')
       fetchPEE(id)
     }
 
@@ -228,12 +232,16 @@ const CertiCreate = ({ onActive, data, fields }) => {
     const onChangePlan = (e) => {
       const inputValue = e.target.value;
       setProgramaId('0');
+      setProgramas([]);
+      setModulos([]);
+      setModulo('0')
       fetchProgramasPorPlan(inputValue);
     };
 
     const onChangePrograma = (e) => {
       const inputValue = e.target.value;
       if (inputValue !== '0') {
+        setModulo('0');
         fetchDataPorProgramaEstudio(inputValue);
       } else {
         setProgramas([]);
@@ -243,7 +251,7 @@ const CertiCreate = ({ onActive, data, fields }) => {
 
     const onChangeSelectPM = (e) => {
       const inputValue = e.target.value;
-      setModulo(inputValue);
+      setModulo(inputValue === '0' ? '0' : '1');
       console.log(inputValue);
     }
 
@@ -269,7 +277,7 @@ const CertiCreate = ({ onActive, data, fields }) => {
       const programaResponse = await PEEService.getPrograma(programaIdD);
       console.log(programaResponse.data);
 
-      
+
       const moduloResponse = await ModuloFormativoService.get(moduloIdD);
       console.log(moduloResponse.data);
 
@@ -370,11 +378,11 @@ const CertiCreate = ({ onActive, data, fields }) => {
                         (<div className="flex items-center gap-2 justify-center">
                           <label className="flex items-center gap-2">
                             Seleccionar solo el programa
-                            <input defaultChecked='0' type="radio" value='0' name={modulo} onChange={onChangeSelectPM} />
+                            <input checked={modulo === '0'} type="radio" value='0' name={modulo} onChange={onChangeSelectPM} />
                           </label>
                           <label className="flex items-center gap-2">
                             Seleccionar un módulo
-                            <input type="radio" value='1' name={modulo} onChange={onChangeSelectPM} />
+                            <input checked={modulo === '1'} type="radio" value='1' name={modulo} onChange={onChangeSelectPM} />
                           </label>
                         </div>) : <></>
                       }
