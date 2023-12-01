@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const UserItem = ({ onUserItemClick, data, isActive }) => {
+const UserItem = ({ onUserItemClick, data, isActive, onActive }) => {
   const handleActiveCard = () => {
     onUserItemClick(data);
   }
@@ -16,8 +16,8 @@ const UserItem = ({ onUserItemClick, data, isActive }) => {
       <td className="w-full flex justify-center items-center text-center">{data.nombres} {data.apellidos}</td>
       <td className="w-full justify-center hidden 2xl:flex items-center">{data.correo}</td>
       <td className="w-full flex justify-center 2xl:hidden items-center gap-2">
-        <button className="bg-active hover:bg-blue-600 text-white p-2 rounded-md">
-          <span className="w-5 h-5 flex items-center justify-center"><FontAwesomeIcon icon='fa-eye' /></span>
+        <button onClick={() => onActive(data)}  className="bg-active hover:bg-blue-600 text-white p-2 rounded-md flex">
+          <span className="w-5 h-5 flex items-center justify-center"><FontAwesomeIcon icon='fa-eye' />Ver</span>
         </button>
         {/*         <button className="bg-active hover:bg-blue-600 text-white p-2 rounded-md">
           <span className="w-5 h-5 flex items-center justify-center"><FontAwesomeIcon icon='fa-message' /></span>

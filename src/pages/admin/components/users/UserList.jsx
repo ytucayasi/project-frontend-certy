@@ -24,6 +24,7 @@ const UserList = ({ data, msg, onActive }) => {
             <UserItem
               key={user.id}
               data={user}
+              onActive={onActive}
               isActive={selectedUser?.id === user.id}
               onUserItemClick={() => handleUserItemClick(user)}
             />
