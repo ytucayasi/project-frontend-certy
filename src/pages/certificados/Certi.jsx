@@ -76,14 +76,19 @@ const Certi = ({ service, entityName, createButtonText, listButtonText }) => {
   }, []);
 
   const fields = [
-    { id: '1', name: 'estudiante', placeholder: 'Estudiante', type: 'text', index: true },
-    { id: '2', name: 'nombre_certificado', placeholder: 'Nombre del certificado', type: 'text' },
-    { id: '3', name: 'creditos', placeholder: 'Créditos', type: 'text' },
-    { id: '4', name: 'horas', placeholder: 'Horas', type: 'text' },
-    { id: '5', name: 'lugar', placeholder: 'Lugar', type: 'text' },
-    { id: '6', name: 'fecha_creacion', placeholder: 'Fecha', type: 'date' },
+    { id: '1', name: 'estudiante', placeholder: 'Estudiante', type: 'text', index: true, isVisible: true},
+    { id: '2', name: 'nombre_certificado', placeholder: 'Nombre del certificado', type: 'text', isVisible: true },
+    { id: '3', name: 'programa_estudios', placeholder: 'Programa de estudios', type: 'text', isVisible: false },
+    { id: '4', name: 'modulo_formativo', placeholder: 'Programa de estudios', type: 'text', isVisible: false },
+    { id: '5', name: 'codigo', placeholder: 'Código de la SUNEDU', type: 'text', isVisible: true },
+    { id: '6', name: 'creditos', placeholder: 'Créditos', type: 'text', isVisible: true },
+    { id: '7', name: 'horas', placeholder: 'Horas', type: 'text', isVisible: true },
+    { id: '8', name: 'lugar', placeholder: 'Lugar', type: 'text', isVisible: true },
+    { id: '9', name: 'fecha_inicio', placeholder: 'Fecha Inicio', type: 'date', isVisible: true },
+    { id: '10', name: 'fecha_fin', placeholder: 'Fecha Fin', type: 'date', isVisible: true },
+    { id: '11', name: 'fecha_creacion', placeholder: 'Fecha Creación', type: 'date', isVisible: false },
     {
-      id: '7', name: 'estado', placeholder: 'Correo del usuario', type: 'text', isSelect: true, options: [
+      id: '12', name: 'estado', placeholder: 'Estado', type: 'text', isSelect: true, isVisible: true, options: [
         { id: 'bg-yellow-500', value: '0', label: 'Aun por revisar' },
         { id: 'bg-blue-500', value: '1', label: 'Pendiente' },
         { id: 'bg-gray-500', value: '2', label: 'Cancelado' },

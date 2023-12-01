@@ -1,7 +1,10 @@
 import React, { useEffect } from "react";
 import { Document, Image, Page, Text, View } from "@react-pdf/renderer";
+import { format, parseISO } from 'date-fns';
+import es from 'date-fns/locale/es';
 
 const CertificadoModular = ({ data }) => {
+
   const styles = {
     table: {
       flexDirection: 'row',
@@ -19,6 +22,19 @@ const CertificadoModular = ({ data }) => {
       backgroundColor: '#f0f0f0',
     },
   };
+
+  function formatearFecha(fecha) {
+    console.log('Fecha original:', fecha);
+  
+    try {
+      const fechaParseada = parseISO(fecha);
+      const fechaFormateada = format(fechaParseada, "dd 'de' MMMM 'del' yyyy", { locale: es });
+      return fechaFormateada;
+    } catch (error) {
+      console.error('Error al formatear la fecha:', error);
+      return 'Fecha aún no asignada';
+    }
+  }
 
   return (
     <Document>
@@ -74,21 +90,21 @@ const CertificadoModular = ({ data }) => {
           </Text>
           <View style={{ marginBottom: 15 }}>
             <Text style={{ color: 'gray' }}>Otorgado a</Text>
-            <Text style={{ color: 'blue', marginTop: 5 }}>DAVID MAMANI PARI</Text>
+            <Text style={{ color: 'blue', marginTop: 5 }}>{data[0].estudiante || 'Nombre del estudiante'}</Text>
             <Text style={{ color: 'gray', marginTop: 5 }}>Por haber aprobado satisfactoriamente el módulo formativo</Text>
-            <Text style={{ color: 'blue', marginTop: 5 }}>Asistencia en promoción y prevención de la salud,</Text>
+            <Text style={{ color: 'blue', marginTop: 5 }}>{data[0].modulo_formativo || 'Módulo Formativo'}</Text>
             <Text style={{ color: 'gray', marginTop: 5 }}>Correspondiente al programa de estudios de</Text>
-            <Text style={{ color: 'blue', marginTop: 5 }}>Enfermería Técnica</Text>
+            <Text style={{ color: 'blue', marginTop: 5 }}>{data[0].programa_estudio || 'Programa de estudio'}</Text>
             <Text style={{ color: 'gray', marginTop: 5 }}>, desarrollado del</Text>
-            <Text style={{ color: 'blue', marginTop: 5 }}>14 de agosto al 01 de diciembre de 2023 {data[0].estudiante}</Text>
+            <Text style={{ color: 'blue', marginTop: 5 }}>{formatearFecha(data[0].fecha_inicio)} al {formatearFecha(data[0].fecha_fin)} </Text>
             <Text style={{ color: 'gray', marginTop: 5 }}>con un total de</Text>
-            <Text style={{ color: 'blue', marginTop: 5 }}>14</Text>
+            <Text style={{ color: 'blue', marginTop: 5 }}>{data[0].creditos || 'Creditos'}</Text>
             <Text style={{ color: 'gray', marginTop: 5 }}>créditos, equivalente a</Text>
-            <Text style={{ color: 'blue', marginTop: 5 }}>120</Text>
+            <Text style={{ color: 'blue', marginTop: 5 }}>{data[0].horas || 'Horas'}</Text>
             <Text style={{ color: 'gray', marginTop: 5 }}>horas.</Text>
           </View>
           <Text style={{ color: 'gray', textAlign: 'right', marginBottom: 40 }}>
-            Lugar y fecha: ..................................
+            Lugar y fecha: {data[0].lugar || 'Lugar'} {formatearFecha(data[0].fecha_creacion)}
           </Text>
           <Text style={{ color: 'gray', textAlign: 'center', marginBottom: 5 }}>
             _______________________
@@ -134,7 +150,7 @@ const CertificadoModular = ({ data }) => {
             }}>
               <Text style={{
                 textAlign: "center"
-              }}>N.° ________________</Text>
+              }}>N.° {data[0].codigo || 'Código Institucional'}</Text>
             </View>
           </View>
           <Text style={{ color: 'gray', textAlign: 'center', marginBottom: 5 }}>

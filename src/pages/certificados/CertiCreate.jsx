@@ -1,14 +1,20 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import userService from "/src/services/user.service";
+import certiService from "/src/services/certi.service";
 import estudianteService from "/src/services/estudiante.service";
 import PEEService from "/src/services/pee.service";
 import ModuloFormativoService from "/src/services/moduloFormativo.service";
 import React, { useState, useEffect } from "react";
 import CertificadoModular from "./pdf/CertificadoModular";
-import { PDFViewer } from "@react-pdf/renderer";
+import {
+  PDFViewer,
+  PDFDownloadLink,
+  BlobProvider,
+} from "@react-pdf/renderer";
 import CertificadoAuxiliar from "./pdf/CertificadoAuxiliar";
 import GradoBachiller from "./pdf/GradoBachiller";
 import CertificadoTecnico from "./pdf/CertifcadoTecnico";
+import { saveAs } from 'file-saver';
 
 const CertiCreate = ({ onActive, data, fields }) => {
   const [msg, setMsg] = useState("");
@@ -16,6 +22,16 @@ const CertiCreate = ({ onActive, data, fields }) => {
   const [typeUser, setTypeUser] = useState('0');
 
   const [showModal, setShowModal] = React.useState(false);
+
+  const [estudianteIdD, setEstudianteIdD] = useState('');
+  const [peeIdD, setPeeIdD] = useState('');
+  const [programaIdD, setProgramaIdD] = useState('');
+  const [moduloIdD, setModuloIdD] = useState('');
+
+  const [estudianteSelect, setEstudianteSelect] = useState('');
+  const [planSelect, setPlanSelect] = useState('');
+  const [programaSelect, setProgramaSelect] = useState('');
+  const [moduloSelect, setModuloSelect] = useState('');
 
   const handleButtonClick = (type) => {
     setTypeUser(type);
@@ -32,8 +48,14 @@ const CertiCreate = ({ onActive, data, fields }) => {
   useEffect(() => {
     if (data) {
       setFormData(data);
+      console.log(formData);
     }
   }, [data]);
+
+  useEffect(() => {
+    formData['fecha_creacion'] = formatDate(Date.now());
+    loadPdf();
+  }, [formData]);
 
   useEffect(() => {
     if (msg) {
@@ -60,11 +82,6 @@ const CertiCreate = ({ onActive, data, fields }) => {
     const [programa, setPrograma] = useState([]);
     const [modulos, setModulos] = useState([]);
     const [modulo, setModulo] = useState('');
-
-    const [estudianteIdD, setEstudianteIdD] = useState('');
-    const [peeIdD, setPeeIdD] = useState('');
-    const [programaIdD, setProgramaIdD] = useState('');
-    const [moduloIdD, setModuloIdD] = useState('');
 
     const searchUsercodU = async (codU) => {
       let limitedUsers = [];
@@ -275,10 +292,11 @@ const CertiCreate = ({ onActive, data, fields }) => {
       }
 
       const programaResponse = await PEEService.getPrograma(programaIdD);
+      formData['programa_estudio'] = programaResponse.data.programa.nombre;
       console.log(programaResponse.data);
 
-
       const moduloResponse = await ModuloFormativoService.get(moduloIdD);
+      formData['modulo_formativo'] = moduloResponse.data.nombre;
       console.log(moduloResponse.data);
 
       if (modulo == 0) {
@@ -439,16 +457,16 @@ const CertiCreate = ({ onActive, data, fields }) => {
         : formData[field.name];
     return (
       <div className="w-full flex flex-col" key={field.id}>
-        <div>
+        {field.isVisible && (<div>
           {field.placeholder}
-        </div>
+        </div>)}
         <div className=" flex w-full ">
-          <span
+          {field.isVisible && (<span
             className={`flex items-center p-2 border-solid border-s-2 border-y-2 border-first rounded-s-lg text-first ${field.index ? "cursor-pointer hover:bg-first hover:text-white" : ""}`}
             onClick={() => (field.index ? setShowModal(true) : "")}
           >
             <FontAwesomeIcon icon="fa-pencil-alt" />
-          </span>
+          </span>)}
           {field.isSelect ? (
             <select
               name={field.name}
@@ -469,21 +487,24 @@ const CertiCreate = ({ onActive, data, fields }) => {
               )}
             </select>
           ) : (
-            <input
-              name={field.name}
-              className="text-first border-solid border-2 border-first outline-none rounded-e-lg p-2 w-full"
-              type={field.type}
-              placeholder={field.placeholder}
-              value={inputValue || ""}
-              onChange={handleFieldChange}
-            />
+            field.isVisible && (
+              <input
+                key={field.id}
+                name={field.name}
+                className="text-first border-solid border-2 border-first outline-none rounded-e-lg p-2 w-full"
+                type={field.type}
+                placeholder={field.placeholder}
+                value={inputValue || ""}
+                onChange={handleFieldChange}
+              />
+            )
           )}
         </div>
       </div>
     );
   };
 
-  const formatDate = (dateString) => {
+  function formatDate(dateString) {
     const date = new Date(dateString);
     const year = date.getUTCFullYear();
     const month = `0${date.getUTCMonth() + 1}`.slice(-2);
@@ -503,34 +524,34 @@ const CertiCreate = ({ onActive, data, fields }) => {
 
   const handleSubmit = async () => {
     try {
-      for (const field in formData) {
-        if (!formData[field]) {
-          setMsg(`El campo ${field} es obligatorio, por favor ingréselo.`);
-          return;
-        }
+      formData['estudiante'] = estudianteIdD;
+
+      const documento = {
+        url_doc: 'url',
+        estado: '1',
       }
 
-      if (typeof formData.value === "string") {
-        Object.keys(formData).forEach((key) => {
-          formData[key] = formData[key].trim();
-        });
+      const certificado = {
+        nombre_certificado: formData['nombre_certificado'],
+        tipo: typeUser,
+        estado_certificado: formData['estado'],
+        codigo: formData['codigo'],
+        creditos: formData['creditos'],
+        horas: formData['horas'],
+        lugar: formData['lugar'],
+        fecha_inicio: formData['fecha_inicio'],
+        fecha_fin: formData['fecha_fin'],
+        fecha_creacion: formData['fecha_creacion'],
+        estudiante_id: formData['estudiante']
       }
 
-      formData.fecha_nacimiento = formatDate(formData.fecha_nacimiento);
-      formData.foto = "src/comon/pgn.png";
+      console.log(documento, certificado);
 
       let response;
 
-      if (data && data.usuario_id) {
-        response = await userService.update(data.usuario_id, formData);
-        console.log("Estudiante actualizado exitosamente:", response.data);
-        console.log("Editar usuario");
-      } else {
-        formData.estado = "1";
-        response = await userService.create(formData);
-        console.log("Estudiante creado exitosamente:", response.data);
-        console.log("Crear usuario");
-      }
+      response = await certiService.create({ documentoInfo: documento, certificadoInfo: certificado });
+      console.log("Estudiante creado exitosamente:", response.data);
+      console.log("Crear usuario");
 
       setFormData(getInitialFormData());
       onActive();
@@ -581,11 +602,6 @@ const CertiCreate = ({ onActive, data, fields }) => {
               onClick={() => (loadPdf())}
             >
               Descargar
-            </button>
-            <button
-              className={`text-white p-2 h-fit rounded-lg bg-orange-500 hover:bg-orange-900`}
-            >
-              Cargar
             </button>
             <button
               className={`text-white p-2 h-fit rounded-lg bg-green-500 hover:bg-green-900`}

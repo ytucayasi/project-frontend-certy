@@ -11,7 +11,7 @@ class CertiService {
   }
 
   update(id, data) {
-    return http.put(`/certificados/${id}`, data);
+    return http.put(`/certificados-documento/${id}`, data);
   }
 
   delete(id) {
